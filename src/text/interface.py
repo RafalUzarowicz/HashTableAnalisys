@@ -9,6 +9,6 @@ parser = argparse.ArgumentParser(description="Generate text sign by sign based o
                                              "By default text is generated to standard output.")
 parser.add_argument("--infile", help="txt file to generate succesive letters probability distribution", action='store')
 parser.add_argument("--outfile", help="output file", action="store")
-parser.add_argument("--prob_tbl", help="pkl file containing probabilty table")
-parser.add_argument("--word_cnt", help="number of words that sould be generated")
+parser.add_argument("--prob-tbl", help="pkl file containing probabilty table")
+parser.add_argument("count", help="number of words to generate")
 args = parser.parse_args()

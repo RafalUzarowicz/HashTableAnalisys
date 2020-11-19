@@ -8,7 +8,7 @@ import random
 import os
 
 BREAK_CHAR = " "
-PROB_TABLE_FILE = "prob_table.pkl"
+PROB_TABLE_FILE = "prob-table.pkl"
 OCC_SUM = "sum"
 
 
