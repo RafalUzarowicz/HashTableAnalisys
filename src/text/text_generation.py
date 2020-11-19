@@ -98,4 +98,3 @@ def generate_text(prob_table: dict, word_count: int) -> str:
 get_text()
 table = create_prob_table()
 print(generate_text(table, 1000))
-
