@@ -13,13 +13,18 @@ class TextGenerator:
     TEXT_BREAK = "\n"
     PROB_TABLE_FILE = "prob-table.pkl"
     DEF_TEXT_FILE = "text.txt"
+    OCC_SUM = "sum"
 
-    def __init__(self, *, infile=None, outfile=None, url="https://wolnelektury.pl/media/book/txt/pan-tadeusz.txt",
+    def __init__(self, *, infile=None, outfile=None, url=None,
                  count=None, prob_tbl=None, series=None):
-        self.url = url
         self.outfile = outfile
         self.text = ""
         self.text_file = infile
+
+        if url:
+            self.url = url
+        else:
+            self.url = "https://wolnelektury.pl/media/book/txt/pan-tadeusz.txt"
 
         if series and len(series):
             self.series = series
@@ -50,7 +55,6 @@ class TextGenerator:
             pickle.dump(self.prob_tbl, file)
 
     def create_prob_table(self):
-        OCC_SUM = "sum"
         prob_table = {}
 
         unique_chars = set(self.text)
@@ -77,7 +81,7 @@ class TextGenerator:
             for other_char in list(prob_table[char].keys()):
                 occ_sum += prob_table[char][other_char]
 
-            prob_table[char][OCC_SUM] = occ_sum
+            prob_table[char][self.OCC_SUM] = occ_sum
             if occ_sum == 0:
                 prob_table.pop(char)
 
