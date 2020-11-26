@@ -18,13 +18,9 @@ class HashTable:
             # TODO: dodaj do istniejacego drzewa
             pass
 
-    def remove(self, value):
-        if isinstance(value, int):
-            # TODO: co jak indeks
-            pass
-        elif isinstance(value, str):
-            # TODO: co jak klucz
-            pass
+    def remove(self, value : str):
+        # TODO: usuwanie
+        pass
 
     def __getitem__(self, item : int ):
         # TODO: opis co zwraca funkcja itp
