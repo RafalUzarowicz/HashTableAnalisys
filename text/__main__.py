@@ -23,8 +23,6 @@ group2.add_argument("--series", nargs="+", type=int, metavar="N",
 parser.add_argument("-out", "-outfile", help="output file", action="store")
 
 args = parser.parse_args()
-print(args)
-#
 generator = TextGenerator(infile=args.infile, outfile=args.out, url=args.url, count=args.count, series=args.series,
                           prob_tbl=args.prob_tbl)
 generator.generate()
