@@ -66,13 +66,3 @@ class HashTable:
 	def __calculate_hash(self, value: str) -> int:
 		return int(md5(value.encode()).hexdigest(), 16) % self.k
 
-
-tab = HashTable(2)
-
-tab.add("2")
-tab.add("0")
-tab.add("6")
-tab.add("1")
-
-for i in range(tab.k):
-	print(tab[i])
