@@ -187,11 +187,3 @@ class BalancedBinaryTree:
 			self.__print_tree(node.left, indent, False)
 			self.__print_tree(node.right, indent, True)
 
-
-tree = BalancedBinaryTree()
-nums = ["33", "13", "52", "9", "21", "61", "8", "11"]
-for num in nums:
-	tree.insert(num)
-
-for num in tree:
-	print(num.value)
