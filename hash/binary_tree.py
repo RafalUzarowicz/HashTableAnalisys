@@ -32,10 +32,13 @@ class BalancedBinaryTree:
 
 	def __init__(self):
 		self.root = None
-		self.size = 0
+		self._size = 0
 
 	def __iter__(self):
 		return BalancedBinaryTree.TreeIterator(self)
+
+	def __len__(self):
+		return self._size
 
 	def insert(self, value: str):
 		self.root = self.__avl_insert(self.root, value)
@@ -44,7 +47,7 @@ class BalancedBinaryTree:
 		# Insertion
 		if root is None:
 			root = self.Node(value)
-			self.size = self.size + 1
+			self._size = self._size + 1
 		elif value < root.value:
 			root.left = self.__avl_insert(root.left, value)
 			root.left.parent = root
@@ -103,7 +106,7 @@ class BalancedBinaryTree:
 			temp_node = self.__get_next_minimal(root.right)
 			root.value = temp_node.value
 			root.right = self.__avl_delete(root.right, temp_node.value)
-			self.size = self.size - 1
+			self._size = self._size - 1
 
 		# Balancing
 
@@ -171,19 +174,21 @@ class BalancedBinaryTree:
 		else:
 			raise ValueError("There is no child node to rotate.")
 
-	def print_tree(self):
-		self.__print_tree(self.root, "", True)
+	def __str__(self):
+		string_tree = []
+		self.__string_tree(self.root, "", True, string_tree)
+		return "".join(string_tree[0:-1])
 
-	def __print_tree(self, node: Node, indent, last):
+	def __string_tree(self, node: Node, indent, last, tree: []):
 		if node is not None:
-			print(indent, end='')
+			tree.append(indent)
 			if last:
-				print("\____", end='')
+				tree.append("\____")
 				indent += "     "
 			else:
-				print("\____", end='')
+				tree.append("\____")
 				indent += "|    "
-			print(node.value)
-			self.__print_tree(node.left, indent, False)
-			self.__print_tree(node.right, indent, True)
-
+			tree.append(node.value)
+			tree.append("\n")
+			self.__string_tree(node.left, indent, False, tree)
+			self.__string_tree(node.right, indent, True, tree)
