@@ -4,6 +4,24 @@
 
 
 class BalancedBinaryTree:
+	class TreeIterator:
+		def __init__(self, tree):
+			self._stack = []
+			self.__prepare_stack(tree.root)
+
+		def __prepare_stack(self, node):
+			temp_node = node
+			while temp_node is not None:
+				self._stack.append(temp_node)
+				temp_node = temp_node.left
+
+		def __next__(self):
+			if len(self._stack) > 0:
+				node = self._stack.pop()
+				self.__prepare_stack(node.right)
+				return node
+			raise StopIteration
+
 	class Node:
 		def __init__(self, value: str):
 			self.value = value
@@ -14,6 +32,10 @@ class BalancedBinaryTree:
 
 	def __init__(self):
 		self.root = None
+		self.size = 0
+
+	def __iter__(self):
+		return BalancedBinaryTree.TreeIterator(self)
 
 	def insert(self, value: str):
 		self.root = self.__avl_insert(self.root, value)
@@ -22,6 +44,7 @@ class BalancedBinaryTree:
 		# Insertion
 		if root is None:
 			root = self.Node(value)
+			self.size = self.size + 1
 		elif value < root.value:
 			root.left = self.__avl_insert(root.left, value)
 			root.left.parent = root
@@ -80,8 +103,7 @@ class BalancedBinaryTree:
 			temp_node = self.__get_next_minimal(root.right)
 			root.value = temp_node.value
 			root.right = self.__avl_delete(root.right, temp_node.value)
-		if root is None:
-			return root
+			self.size = self.size - 1
 
 		# Balancing
 
@@ -148,3 +170,28 @@ class BalancedBinaryTree:
 			return self.__left(node)
 		else:
 			raise ValueError("There is no child node to rotate.")
+
+	def print_tree(self):
+		self.__print_tree(self.root, "", True)
+
+	def __print_tree(self, node: Node, indent, last):
+		if node is not None:
+			print(indent, end='')
+			if last:
+				print("\____", end='')
+				indent += "     "
+			else:
+				print("\____", end='')
+				indent += "|    "
+			print(node.value)
+			self.__print_tree(node.left, indent, False)
+			self.__print_tree(node.right, indent, True)
+
+
+tree = BalancedBinaryTree()
+nums = ["33", "13", "52", "9", "21", "61", "8", "11"]
+for num in nums:
+	tree.insert(num)
+
+for num in tree:
+	print(num.value)
