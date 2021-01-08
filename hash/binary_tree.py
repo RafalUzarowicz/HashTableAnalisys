@@ -51,9 +51,11 @@ class BalancedBinaryTree:
 		elif value < root.value:
 			root.left = self.__avl_insert(root.left, value)
 			root.left.parent = root
-		else:
+		elif value > root.value:
 			root.right = self.__avl_insert(root.right, value)
 			root.right.parent = root
+		else:
+			raise ValueError("Value already inside tree.")
 
 		# Balancing
 		self.__update_height(root)
@@ -65,7 +67,7 @@ class BalancedBinaryTree:
 			else:
 				return self.__left_right(root)
 		if balance < -1:
-			if value > root.right.value:
+			if value >= root.right.value:
 				return self.__left(root)
 			else:
 				return self.__right_left(root)

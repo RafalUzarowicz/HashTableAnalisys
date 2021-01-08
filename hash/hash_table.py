@@ -24,6 +24,7 @@ class HashTable:
 		def __next__(self):
 			if self._table_index < self._table.k and self._element_index < len(self._table):
 				if self._iterator is None:
+					self.__find_next(self._table_index)
 					self._iterator = iter(self._table[self._table_index])
 				try:
 					return next(self._iterator).value
@@ -46,14 +47,14 @@ class HashTable:
 		return self._size
 
 	def add(self, value: str):
-		key = self.__calculate_hash(value)
+		key = self.calculate_hash(value)
 		if self.table[key] is None:
 			self.table[key] = Tree()
 		self.table[key].insert(value)
 		self._size = self._size + 1
 
 	def remove(self, value: str):
-		key = self.__calculate_hash(value)
+		key = self.calculate_hash(value)
 		if self.table[key] is not None:
 			tree_size = len(self.table[key])
 			self.table[key].delete(value)
@@ -63,6 +64,6 @@ class HashTable:
 	def __getitem__(self, item):
 		return self.table[item]
 
-	def __calculate_hash(self, value: str) -> int:
+	def calculate_hash(self, value: str) -> int:
 		return int(md5(value.encode()).hexdigest(), 16) % self.k
 
