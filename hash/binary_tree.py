@@ -9,7 +9,7 @@ class BalancedBinaryTree:
             self._stack = []
             self.__prepare_stack(tree.root)
 
-        def __prepare_stack(self, node):
+        def __prepare_stack(self, node) -> None:
             temp_node = node
             while temp_node is not None:
                 self._stack.append(temp_node)
@@ -40,10 +40,10 @@ class BalancedBinaryTree:
     def __len__(self):
         return self._size
 
-    def insert(self, value: str):
+    def insert(self, value: str) -> None:
         self.root = self.__avl_insert(self.root, value)
 
-    def __avl_insert(self, root: Node, value: str):
+    def __avl_insert(self, root: Node, value: str) -> Node:
         # Insertion
         if root is None:
             root = self.Node(value)
@@ -51,11 +51,9 @@ class BalancedBinaryTree:
         elif value < root.value:
             root.left = self.__avl_insert(root.left, value)
             root.left.parent = root
-        elif value > root.value:
+        else:
             root.right = self.__avl_insert(root.right, value)
             root.right.parent = root
-        else:
-            raise ValueError("Value already inside tree.")
 
         # Balancing
         self.__update_height(root)
@@ -86,7 +84,7 @@ class BalancedBinaryTree:
         else:
             return self.__get_height(node.left) - self.__get_height(node.right)
 
-    def delete(self, value: str):
+    def delete(self, value: str) -> None:
         self.root = self.__avl_delete(self.root, value)
 
     def __avl_delete(self, root: Node, value: str):
@@ -159,7 +157,7 @@ class BalancedBinaryTree:
         else:
             raise ValueError("There is no child node to rotate.")
 
-    def __update_height(self, node: Node):
+    def __update_height(self, node: Node) -> None:
         node.height = 1 + max(self.__get_height(node.left), self.__get_height(node.right))
 
     def __left_right(self, node: Node) -> Node:
@@ -176,12 +174,12 @@ class BalancedBinaryTree:
         else:
             raise ValueError("There is no child node to rotate.")
 
-    def __str__(self):
+    def __str__(self) -> str:
         string_tree = []
         self.__string_tree(self.root, "", True, string_tree)
         return "".join(string_tree[0:-1])
 
-    def __string_tree(self, node: Node, indent, last, tree: []):
+    def __string_tree(self, node: Node, indent, last, tree: []) -> None:
         if node is not None:
             tree.append(indent)
             if last:
