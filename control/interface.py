@@ -4,11 +4,10 @@
 import argparse
 import os
 import sys
-import time
-from random import shuffle
-
-from hash.hash_table import HashTable
+from random import choice, shuffle
 from text.generator import TextGenerator
+from hash.hash_table import HashTable
+import timeit
 
 
 def main():
@@ -16,29 +15,119 @@ def main():
 
     if args.k < 1:
         print("Hashtable size must be at least 1")
-        return 0
     else:
-        std_flag = not (args.gen or args.test)
+        if args.gen:
+            text_mode(args.k, args.gen)
+        elif args.test:
+            test_mode(args.k, args.r)
+        else:
+            standard_mode(args.k)
 
-    if args.gen is None:
-        # args.gen = [10, 50, 100, 400, 800, 1000, 2000, 5000, 8000, 10000]
-        args.gen = [1000]
 
-    if std_flag:
-        instances = get_instances()
-    else:
-        print("Generating problem instances...")
-        instances = generate_instances(args.gen)
-        print("Generated.")
+def standard_mode(k):
+    instances = get_instances()
+    no_experiments_mode(instances, k)
 
-    print("Starting experiments...")
-    # l = "am  ka i ok hy".split(" ")
-    # hashtable = HashTable(1)
-    # for key in l:
-    #     print(key)
-    #     hashtable.add(key)
-    times = do_experiments(instances, args.k)
-    present_results(times)
+
+def no_experiments_mode(instances, k):
+    for instance in instances:
+        hashtable = HashTable(k)
+        print("Adding...")
+        for word in instance:
+            hashtable.add(word)
+        if len(hashtable) == len(instance):
+            print("All words added to hashtable")
+        else:
+            print("Error: did not add all words")
+        # todo print hashtable
+        try:
+            print("Enumerating...")
+            it = iter(hashtable)
+            while True:
+                print(next(it))
+        except StopIteration:
+            print("All nodes enumerated.")
+            pass
+
+        shuffle(instance)
+        print("Removing all nodes..")
+        for word in instance:
+            hashtable.remove(word)
+
+        if len(hashtable):
+            print("ERROR: did not remove all elements")
+            print(len(hashtable))
+        else:
+            print("Hashtable empty.")
+
+
+def test_mode(k, repetitions):
+    enum = "enum"
+    add = "add"
+    delete = "del"
+    sizes = [5, 10, 50]  # , 100, 1000, 10000]
+    results = {}
+
+    for size in sizes:
+        # print("Experiments for size: ", size)
+        size_result = {}
+
+        # preparations
+        series = [size] * repetitions
+        instances = generate_instances(series)
+        keys_to_add = generate_instances([repetitions])[0]
+
+        # create hashtables and add previously generated keys to it
+        tables = []
+        for instance in instances:
+            table = HashTable(k)
+            for key in instance:
+                table.add(key)
+            tables.append(table)
+
+        # randomly choose keys that will be later removed from table
+        keys_to_remove = []
+        for instance in instances:
+            keys_to_remove.append(choice(instance))
+
+        # sanity check
+        if len(tables) != repetitions:
+            raise ValueError("Did not create right number of tables")
+
+        # measure enumerating time
+        start_time = timeit.default_timer()
+        for table in tables:
+            enumerate(table)
+        end_time = timeit.default_timer()
+        size_result[enum] = end_time - start_time
+
+        # measure adding time
+        start_time = timeit.default_timer()
+        for i in range(repetitions):
+            tables[i].add(keys_to_add[i])
+        end_time = timeit.default_timer()
+        size_result[add] = end_time - start_time
+
+        # delete previously added keys (to keep the right problem size)
+        for i in range(repetitions):
+            tables[i].remove(keys_to_add[i])
+
+        # measure delete time
+        start_time = timeit.default_timer()
+        for i in range(repetitions):
+            tables[i].remove(keys_to_remove[i])
+        end_time = timeit.default_timer()
+        size_result[delete] = end_time - start_time
+
+        results[size] = size_result
+        # print(size_result)
+    # print(results)
+    present_results(results)
+
+
+def text_mode(k, series):
+    instances = generate_instances(series)
+    no_experiments_mode(instances, k)
 
 
 def parse_args():
@@ -56,20 +145,19 @@ def parse_args():
     mode_group.add_argument("-test", action="store_true",
                             help="generate predefined problem instances, measure time of execution and present results")
 
-    parser.add_argument("k", type=int, help="max size of hashtable, must be greater than 0")
+    parser.add_argument("-k", type=int, default=50,
+                        help="max size of hashtable, must be greater than 0, defaults to 50")
+    parser.add_argument("-r", type=int, default=100,
+                        help="number of repetitions for tests, relevant only if test mode is used, defaults to 100")
+    parser.add_argument("-save", type=str, default="out.csv",
+                        help="name of the results file, relevant only for test mode, defaults to out.csv")
 
     return parser.parse_args()
 
 
 def generate_instances(series) -> []:
     prob_tbl = find_file("..", "prob-tbl.csv")
-    if type(series) is int:
-        s = [series]
-    elif type(series) is list:
-        s = series
-    else:
-        raise TypeError("Series must be an int or a list of ints")
-    generator = TextGenerator(series=s, prob_tbl=prob_tbl)
+    generator = TextGenerator(series=series, prob_tbl=prob_tbl)
     return generator.generate()
 
 
@@ -97,46 +185,6 @@ def get_instances() -> []:
             instances.append(line.split(" "))
     print("You have inputted " + str(len(instances)) + " problem instances")
     return instances
-
-
-def do_experiments(instances: [], k) -> {}:
-    times = {}
-    for instance in instances:
-        # todo figure out why no child note to rotate error is raised while inserting many values to the tree
-        size = len(instance)
-        times[size] = {}
-        print("Experiments for " + str(size) + " elements")
-        hashtable = HashTable(k)
-
-        # add all keys and measure time
-        print("Inserting")
-        start_t = time.time()
-        for key in instance:
-            print(key)
-            hashtable.add(key)
-        end_t = time.time()
-        times[size]["add"] = end_t - start_t
-
-        # enumerate all keys and measure time
-        print("Enumerating")
-        start_t = time.time()
-        try:
-            it = iter(hashtable)
-            while True:
-                next(it)
-        except StopIteration:
-            end_t = time.time()
-            times[size]["enum"] = end_t - start_t
-
-        # delete all keys and measure time
-        print("Deleting")
-        shuffle(instance)
-        start_t = time.time()
-        for key in instance:
-            hashtable.remove(key)
-        end_t = time.time()
-        times[size]["del"] = end_t - start_t
-    return times
 
 
 def present_results(results: {}):

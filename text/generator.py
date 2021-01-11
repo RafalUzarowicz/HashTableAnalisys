@@ -22,7 +22,7 @@ class TextGenerator:
     def __init__(self, *, infile=None, outfile=None, url=None,
                  count=None, prob_tbl=None, series=None):
         self.outfile = outfile
-        self.text = ""
+        self.results = []
         self.text_file = infile
 
         if url:
@@ -53,10 +53,7 @@ class TextGenerator:
         self.__generate_text()
         if print_results:
             self.__show_results()
-        results = []
-        for line in self.text.split(self.TEXT_BREAK)[:-1]:
-            results.append(line.split(self.WORD_BREAK)[:-1])
-        return results
+        return self.results
 
     def __get_text(self):
         if os.path.exists(self.text_file):
@@ -71,16 +68,16 @@ class TextGenerator:
         cleaned_text.lower()
         words = [char for char in cleaned_text.split() if len(char) > 4]
         cleaned_text = self.WORD_BREAK.join(words)
-        self.text = cleaned_text.lower()
+        self.results = cleaned_text.lower()
 
     def __create_prob_table(self):
         table = pd.DataFrame(index=self.ACCEPTED_CHARS, columns=self.ACCEPTED_CHARS)
         table = table.fillna(0)
         i = 0
 
-        while i < len(self.text) - 1:
-            char = self.text[i]
-            next_char = self.text[i + 1]
+        while i < len(self.results) - 1:
+            char = self.results[i]
+            next_char = self.results[i + 1]
             table[next_char][char] += 1
             i += 1
         self.prob_tbl = table
@@ -92,13 +89,15 @@ class TextGenerator:
     def __generate_text(self):
         if not self.__is_sufficient():
             raise (ValueError("Probability table is not enough for text generation"))
-        self.text = ""
+        self.results = []
         self.prob_tbl['sum'] = self.prob_tbl.sum(axis=1)
         columns = self.prob_tbl.columns
         next_char = ''
         for count in self.series:
+            instance = []
             for i in range(count):
                 char = self.WORD_BREAK
+                word = ""
                 while True:
                     rand = random.randint(0, self.prob_tbl['sum'][char]-1)
                     for j in range(len(columns)):
@@ -108,11 +107,12 @@ class TextGenerator:
                             break
                         else:
                             rand -= occurrences
-                    self.text += next_char
+                    word += next_char
                     char = next_char
                     if next_char == self.WORD_BREAK:
+                        instance.append(word)
                         break
-            self.text += self.TEXT_BREAK
+            self.results.append(instance)
 
     def __is_sufficient(self):
         sums = list(self.prob_tbl.sum(axis=1))
@@ -122,8 +122,12 @@ class TextGenerator:
         return True
 
     def __show_results(self):
+        temp = []
+        for res in self.results:
+            temp.append(self.WORD_BREAK.join(res))
+        text = self.TEXT_BREAK.join(temp)
         if self.outfile:
             with open(self.outfile, "w") as file:
-                file.write(self.text)
+                file.write(text)
         else:
-            print(self.text)
+            print(text)
