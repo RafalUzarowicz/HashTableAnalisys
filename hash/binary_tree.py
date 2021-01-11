@@ -9,7 +9,7 @@ class BalancedBinaryTree:
             self._stack = []
             self.__prepare_stack(tree.root)
 
-        def __prepare_stack(self, node):
+        def __prepare_stack(self, node) -> None:
             temp_node = node
             while temp_node is not None:
                 self._stack.append(temp_node)
@@ -40,10 +40,10 @@ class BalancedBinaryTree:
     def __len__(self):
         return self._size
 
-    def insert(self, value: str):
+    def insert(self, value: str) -> None:
         self.root = self.__avl_insert(self.root, value)
 
-    def __avl_insert(self, root: Node, value: str):
+    def __avl_insert(self, root: Node, value: str) -> Node:
         # Insertion
         if root is None:
             root = self.Node(value)
@@ -60,12 +60,12 @@ class BalancedBinaryTree:
         balance = self.__get_balance(root)
 
         if balance > 1:
-            if value < root.left.value:
+            if value <= root.left.value:
                 return self.__right(root)
             else:
                 return self.__left_right(root)
         if balance < -1:
-            if value > root.right.value:
+            if value >= root.right.value:
                 return self.__left(root)
             else:
                 return self.__right_left(root)
@@ -84,7 +84,7 @@ class BalancedBinaryTree:
         else:
             return self.__get_height(node.left) - self.__get_height(node.right)
 
-    def delete(self, value: str):
+    def delete(self, value: str) -> None:
         self.root = self.__avl_delete(self.root, value)
 
     def __avl_delete(self, root: Node, value: str):
@@ -98,15 +98,15 @@ class BalancedBinaryTree:
             root.right = self.__avl_delete(root.right, value)
         else:
             if root.left is None:
-                temp_node = root.right
-                return temp_node
+                self._size = self._size - 1
+                return root.right
             elif root.right is None:
-                temp_node = root.left
-                return temp_node
+                self._size = self._size - 1
+                return root.left
             temp_node = self.__get_next_minimal(root.right)
+
             root.value = temp_node.value
             root.right = self.__avl_delete(root.right, temp_node.value)
-            self._size = self._size - 1
 
         # Balancing
 
@@ -157,7 +157,7 @@ class BalancedBinaryTree:
         else:
             raise ValueError("There is no child node to rotate.")
 
-    def __update_height(self, node: Node):
+    def __update_height(self, node: Node) -> None:
         node.height = 1 + max(self.__get_height(node.left), self.__get_height(node.right))
 
     def __left_right(self, node: Node) -> Node:
@@ -174,12 +174,12 @@ class BalancedBinaryTree:
         else:
             raise ValueError("There is no child node to rotate.")
 
-    def __str__(self):
+    def __str__(self) -> str:
         string_tree = []
         self.__string_tree(self.root, "", True, string_tree)
         return "".join(string_tree[0:-1])
 
-    def __string_tree(self, node: Node, indent, last, tree: []):
+    def __string_tree(self, node: Node, indent, last, tree: []) -> None:
         if node is not None:
             tree.append(indent)
             if last:
