@@ -41,7 +41,7 @@ class TextGenerator:
     def __load_prob_tbl(self, prob_file):
         self.prob_tbl = pd.read_csv(prob_file, index_col=0)
 
-    def generate(self):
+    def generate(self, print_results=False) -> []:
         if self.prob_tbl is None:
             if not self.text_file:
                 self.text_file = self.DEF_TEXT_FILE
@@ -51,7 +51,12 @@ class TextGenerator:
             self.__save_prob_table()
 
         self.__generate_text()
-        self.__show_results()
+        if print_results:
+            self.__show_results()
+        results = []
+        for line in self.text.split(self.TEXT_BREAK)[:-1]:
+            results.append(line.split(self.WORD_BREAK)[:-1])
+        return results
 
     def __get_text(self):
         if os.path.exists(self.text_file):
@@ -95,7 +100,7 @@ class TextGenerator:
             for i in range(count):
                 char = self.WORD_BREAK
                 while True:
-                    rand = random.randint(0, self.prob_tbl['sum'][char])
+                    rand = random.randint(0, self.prob_tbl['sum'][char]-1)
                     for j in range(len(columns)):
                         occurrences = self.prob_tbl[columns[j]][char]
                         if occurrences > rand:
