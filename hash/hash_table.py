@@ -1,6 +1,6 @@
 from hashlib import md5
 
-from binary_tree import BalancedBinaryTree as Tree
+from hash.binary_tree import BalancedBinaryTree as Tree
 
 """
 	Author: Rafał Uzarowicz - https://github.com/RafalUzarowicz

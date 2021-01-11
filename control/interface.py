@@ -69,7 +69,7 @@ def test_mode(k, repetitions):
     results = {}
 
     for size in sizes:
-        # print("Experiments for size: ", size)
+        print("Experiments for size: ", size)
         size_result = {}
 
         # preparations
@@ -120,7 +120,7 @@ def test_mode(k, repetitions):
         size_result[delete] = end_time - start_time
 
         results[size] = size_result
-        # print(size_result)
+        print(size_result)
     # print(results)
     present_results(results)
 
