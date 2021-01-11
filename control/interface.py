@@ -41,6 +41,7 @@ def no_experiments_mode(instances, k):
             print("Error: did not add all words")
         # todo print hashtable
         try:
+            # todo proper enumeration xd
             print("Enumerating...")
             it = iter(hashtable)
             while True:
@@ -175,6 +176,7 @@ def find_file(current_dir, filename) -> []:
 
 
 def get_instances() -> []:
+    # todo check if no keys are made of namespaces xd
     print("Enter strings divided by whitespaces. To finish an instance please press ENTER. If you want to finish "
           "inputting data please enter empty line followed by ENTER.")
     instances = []
