@@ -43,32 +43,34 @@ class BalancedBinaryTree:
     def insert(self, value: str):
         self.root = self.__avl_insert(self.root, value)
 
-    def __avl_insert(self, root: Node, value: str):
-        # Insertion
-        if root is None:
-            root = self.Node(value)
-            self._size = self._size + 1
-        elif value < root.value:
-            root.left = self.__avl_insert(root.left, value)
-            root.left.parent = root
-        else:
-            root.right = self.__avl_insert(root.right, value)
-            root.right.parent = root
+	def __avl_insert(self, root: Node, value: str):
+		# Insertion
+		if root is None:
+			root = self.Node(value)
+			self._size = self._size + 1
+		elif value < root.value:
+			root.left = self.__avl_insert(root.left, value)
+			root.left.parent = root
+		elif value > root.value:
+			root.right = self.__avl_insert(root.right, value)
+			root.right.parent = root
+		else:
+			raise ValueError("Value already inside tree.")
 
         # Balancing
         self.__update_height(root)
         balance = self.__get_balance(root)
 
-        if balance > 1:
-            if value < root.left.value:
-                return self.__right(root)
-            else:
-                return self.__left_right(root)
-        if balance < -1:
-            if value > root.right.value:
-                return self.__left(root)
-            else:
-                return self.__right_left(root)
+		if balance > 1:
+			if value <= root.left.value:
+				return self.__right(root)
+			else:
+				return self.__left_right(root)
+		if balance < -1:
+			if value >= root.right.value:
+				return self.__left(root)
+			else:
+				return self.__right_left(root)
 
         return root
 
