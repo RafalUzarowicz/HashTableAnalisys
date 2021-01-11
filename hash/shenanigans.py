@@ -4,25 +4,35 @@
 from binary_tree import BalancedBinaryTree as BBT
 from hash_table import HashTable as HT
 
+k = 10
+n = 1000
 
-hashTable = HT(2)
+hashTable = HT(k)
 
-for x in range(10):
+for x in range(n):
 	hashTable.add(x.__str__())
+	print(len(hashTable))
 	# print(x, " ", hashTable.calculate_hash(x.__str__()))
 
-hashTable.add("0")
-hashTable.add("0")
-hashTable.add("0")
-hashTable.add("0")
+xd = 5
+
+for i in range(xd):
+	hashTable.add("0")
 
 print(hashTable)
 
-hashTable.remove("0")
-hashTable.remove("0")
-hashTable.remove("0")
-hashTable.remove("0")
-hashTable.remove("0")
-hashTable.remove("0")
+
+for x in range(n):
+	hashTable.remove(x.__str__())
+	print(len(hashTable))
+	# print(x, " ", hashTable.calculate_hash(x.__str__()))
 
 print(hashTable)
+
+for i in range(xd):
+	hashTable.remove("0")
+	# print(len(hashTable.table[0]))
+	print(len(hashTable))
+# hashTable.remove("0")
+#
+# print(hashTable)

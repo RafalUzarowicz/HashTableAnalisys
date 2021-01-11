@@ -98,15 +98,15 @@ class BalancedBinaryTree:
             root.right = self.__avl_delete(root.right, value)
         else:
             if root.left is None:
-                temp_node = root.right
-                return temp_node
+                self._size = self._size - 1
+                return root.right
             elif root.right is None:
-                temp_node = root.left
-                return temp_node
+                self._size = self._size - 1
+                return root.left
             temp_node = self.__get_next_minimal(root.right)
+
             root.value = temp_node.value
             root.right = self.__avl_delete(root.right, temp_node.value)
-            self._size = self._size - 1
 
         # Balancing
 
