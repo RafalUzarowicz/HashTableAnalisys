@@ -25,7 +25,7 @@ def main():
             if args.sizes:
                 sizes = args.sizes
             else:
-                sizes = [5, 10, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000]
+                sizes = [5, 10, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000]
             test_mode(args.k, args.r, sizes, args.outfile)
         else:
             standard_mode(args.k)
@@ -67,6 +67,7 @@ def no_experiments_mode(instances, k):
 
 
 def test_mode(k, repetitions, sizes, outfile=None):
+    print("Value of k: ", k)
     sizes.sort()
     df = pd.DataFrame(columns=["add", "enum", "del"], index=sizes)
 
@@ -196,29 +197,31 @@ def get_instances() -> []:
 
 def present_results(df: pd.DataFrame, sizes):
     # calculate median values
-    if len(sizes) % 2 != 0:
-        med_size = sizes[(len(sizes) + 1) / 2]
-        med_add = df["add"][med_size]
-        med_del = df["del"][med_size]
-        med_enum = df["enum"][med_size]
-    else:
+    if len(sizes) % 2 == 0:
         med_l = sizes[len(sizes) // 2]
-        med_r = sizes[len(sizes) // 2 + 1]
+        med_r = sizes[len(sizes) // 2 - 1]
         med_size = (med_r + med_l) / 2
         med_add = (df["add"][med_l] + df["add"][med_r]) / 2
         med_del = (df["add"][med_l] + df["add"][med_r]) / 2
         med_enum = (df["add"][med_l] + df["add"][med_r]) / 2
+    else:
+        print((len(sizes) - 1) / 2)
+        print((len(sizes) - 1) // 2)
+        med_size = sizes[(len(sizes) - 1) // 2]
+        med_add = df["add"][med_size]
+        med_del = df["del"][med_size]
+        med_enum = df["enum"][med_size]
 
     med_add_theory = math.log(med_size)
     med_del_theory = math.log(med_size)
-    med_enum_theory = math.log(med_size)
+    med_enum_theory = math.log(med_size) * med_size
 
     add = pd.DataFrame(df["add"], columns=["add"])
     add["q(n)"] = df["add"].divide([math.log(x) for x in sizes]) * med_add_theory / med_add
     delete = pd.DataFrame(df["del"], columns=["del"])
     delete["q(n)"] = df["del"].divide([math.log(x) for x in sizes]) * med_del_theory / med_del
     enum = pd.DataFrame(df["enum"], columns=["enum"])
-    enum["q(n)"] = df["enum"].divide([math.log(x) for x in sizes]) * med_enum_theory / med_enum
+    enum["q(n)"] = df["enum"].divide([math.log(x) * x for x in sizes]) * med_enum_theory / med_enum
 
     print("Results for adding")
     print(tabulate(add, headers=["n"] + add.columns.tolist(), tablefmt="pretty"))
