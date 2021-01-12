@@ -74,53 +74,49 @@ def test_mode(k, repetitions, sizes, outfile=None):
     for size in sizes:
         print("Experiments for size: ", size)
 
-        # preparations
-        series = [size] * repetitions
-        instances = generate_instances(series)
-        keys_to_add = generate_instances([repetitions])[0]
+        enum = []
+        delete = []
+        add = []
 
-        # create hashtables and add previously generated keys to it
-        tables = []
-        for instance in instances:
+        for i in range(repetitions):
+            # preparations
+            # series = [size] * repetitions
+            temp = generate_instances([size + 1])[0]
+            instance = temp[:-1]
+            to_add = temp[-1]
+            # create hashtables and add previously generated keys to it
+            tables = []
+
             table = HashTable(k)
             for key in instance:
                 table.add(key)
-            tables.append(table)
 
-        # randomly choose keys that will be later removed from table
-        keys_to_remove = []
-        for instance in instances:
-            keys_to_remove.append(choice(instance))
-
-        # sanity check
-        if len(tables) != repetitions:
-            raise ValueError("Did not create right number of tables")
-
-        # measure enumerating time
-        start_time = timeit.default_timer()
-        for table in tables:
+            # measure enumerating time
+            start_time = timeit.default_timer()
             for item in table:
                 pass
-        end_time = timeit.default_timer()
-        df["enum"][size] = (end_time - start_time) * 1000 / repetitions
+            end_time = timeit.default_timer()
+            enum.append(end_time-start_time)
 
-        # measure adding time
-        start_time = timeit.default_timer()
-        for i in range(repetitions):
-            tables[i].add(keys_to_add[i])
-        end_time = timeit.default_timer()
-        df["add"][size] = (end_time - start_time) * 1000 / repetitions
+            # measure adding time
+            start_time = timeit.default_timer()
+            table.add(to_add)
+            end_time = timeit.default_timer()
+            add.append(end_time - start_time)
 
-        # delete previously added keys (to keep the right problem size)
-        for i in range(repetitions):
-            tables[i].remove(keys_to_add[i])
+            # delete previously added keys (to keep the right problem size)
+            table.remove(to_add)
 
-        # measure delete time
-        start_time = timeit.default_timer()
-        for i in range(repetitions):
-            tables[i].remove(keys_to_remove[i])
-        end_time = timeit.default_timer()
-        df["del"][size] = (end_time - start_time) * 1000 / repetitions
+            # measure delete time
+            to_del = choice(instance)
+            start_time = timeit.default_timer()
+            table.remove(to_del)
+            end_time = timeit.default_timer()
+            delete.append(end_time-start_time)
+
+        df["del"][size] = sum(delete) / len(delete)
+        df["add"][size] = sum(delete) / len(delete)
+        df["enum"][size] = sum(delete) / len(delete)
 
         df.to_csv(outfile)
     present_results(df, sizes)
