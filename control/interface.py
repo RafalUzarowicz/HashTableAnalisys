@@ -10,7 +10,6 @@ from text.generator import TextGenerator
 from hash.hash_table import HashTable
 import timeit
 from tabulate import tabulate
-from statistics import median
 import math
 
 
@@ -203,8 +202,8 @@ def present_results(df: pd.DataFrame, sizes):
         med_del = df["del"][med_size]
         med_enum = df["enum"][med_size]
     else:
-        med_l = sizes[len(sizes) / 2]
-        med_r = sizes[len(sizes) / 2 + 1]
+        med_l = sizes[len(sizes) // 2]
+        med_r = sizes[len(sizes) // 2 + 1]
         med_size = (med_r + med_l) / 2
         med_add = (df["add"][med_l] + df["add"][med_r]) / 2
         med_del = (df["add"][med_l] + df["add"][med_r]) / 2
