@@ -8,33 +8,6 @@ from hash.binary_tree import BalancedBinaryTree as Tree
 
 
 class HashTable:
-	class HashTableIterator:
-		def __init__(self, table):
-			self._table = table
-			self._element_index = 0
-			self._table_index = 0
-			self._iterator = None
-
-		def __find_next(self, starting_index) -> None:
-			index = starting_index
-			while index < self._table.k and self._table[index] is None:
-				index = index + 1
-			self._table_index = index
-
-		def __next__(self):
-			if self._table_index < self._table.k and self._element_index < len(self._table):
-				if self._iterator is None:
-					self.__find_next(self._table_index)
-					self._iterator = iter(self._table[self._table_index])
-				try:
-					return next(self._iterator).value
-				except StopIteration:
-					self.__find_next(self._table_index + 1)
-					if self._table_index < self._table.k:
-						self._iterator = iter(self._table[self._table_index])
-						return next(self._iterator).value
-			raise StopIteration
-
 	def __init__(self, length: int):
 		if not isinstance(length, int) or length <= 0:
 			raise ValueError("Table size should be positive number.")
@@ -43,7 +16,10 @@ class HashTable:
 		self._size = 0
 
 	def __iter__(self):
-		return self.HashTableIterator(self)
+		for tree in self.table:
+			if tree is not None:
+				for node in tree:
+					yield node
 
 	def __len__(self):
 		return self._size
