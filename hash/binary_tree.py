@@ -54,7 +54,7 @@ class BalancedBinaryTree:
         balance = self.__get_balance(root)
 
         if balance > 1:
-            if value <= root.left.value:
+            if value < root.left.value:
                 return self.__right(root)
             else:
                 return self.__left_right(root)
