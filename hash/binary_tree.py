@@ -4,24 +4,6 @@
 
 
 class BalancedBinaryTree:
-    class TreeIterator:
-        def __init__(self, tree):
-            self._stack = []
-            self.__prepare_stack(tree.root)
-
-        def __prepare_stack(self, node) -> None:
-            temp_node = node
-            while temp_node is not None:
-                self._stack.append(temp_node)
-                temp_node = temp_node.left
-
-        def __next__(self):
-            if len(self._stack) > 0:
-                node = self._stack.pop()
-                self.__prepare_stack(node.right)
-                return node
-            raise StopIteration
-
     class Node:
         def __init__(self, value: str):
             self.value = value
@@ -30,12 +12,24 @@ class BalancedBinaryTree:
             self.right = None
             self.parent = None
 
+        def __str__(self):
+            return str(self.value)
+
+        def __iter__(self):
+            if self.left:
+                for elem in self.left:
+                    yield elem
+            yield self
+            if self.right:
+                for elem in self.right:
+                    yield elem
+
     def __init__(self):
         self.root = None
         self._size = 0
 
     def __iter__(self):
-        return BalancedBinaryTree.TreeIterator(self)
+        return iter(self.root)
 
     def __len__(self):
         return self._size
