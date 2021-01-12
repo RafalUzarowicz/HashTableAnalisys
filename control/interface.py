@@ -1,5 +1,5 @@
 """
-    author: Joanna Sokołowska - https://github.com/jsokolowska
+    author: Joanna Sokolowska - https://github.com/jsokolowska
  """
 import argparse
 import os
@@ -98,7 +98,8 @@ def test_mode(k, repetitions):
         # measure enumerating time
         start_time = timeit.default_timer()
         for table in tables:
-            enumerate(table)
+            for item in table:
+                pass
         end_time = timeit.default_timer()
         size_result[enum] = end_time - start_time
 
@@ -167,7 +168,7 @@ def find_file(current_dir, filename) -> []:
     path = current_dir + "/" + filename
     if os.path.isfile(current_dir + "/" + filename):
         return path
-    else:
+    elif os.path.isdir(path):
         for directory in os.listdir(current_dir):
             return_path = find_file(current_dir + "/" + directory, filename)
             if return_path:

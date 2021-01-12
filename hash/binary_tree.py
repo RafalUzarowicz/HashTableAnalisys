@@ -104,7 +104,6 @@ class BalancedBinaryTree:
                 self._size = self._size - 1
                 return root.left
             temp_node = self.__get_next_minimal(root.right)
-
             root.value = temp_node.value
             root.right = self.__avl_delete(root.right, temp_node.value)
 
