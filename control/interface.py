@@ -4,10 +4,14 @@
 import argparse
 import os
 import sys
+import pandas as pd
 from random import choice, shuffle
 from text.generator import TextGenerator
 from hash.hash_table import HashTable
 import timeit
+from tabulate import tabulate
+from statistics import median
+import math
 
 
 def main():
@@ -17,9 +21,13 @@ def main():
         print("Hashtable size must be at least 1")
     else:
         if args.gen:
-            text_mode(args.k, args.gen)
+            text_mode(args.k)
         elif args.test:
-            test_mode(args.k, args.r)
+            if args.sizes:
+                sizes = args.sizes
+            else:
+                sizes = [5, 10, 100, 5000, 10000, 50000]  # , 100, 5000, 10000, 50000, 100000, 500000, 1000000]
+            test_mode(args.k, args.r, sizes, args.outfile)
         else:
             standard_mode(args.k)
 
@@ -39,16 +47,13 @@ def no_experiments_mode(instances, k):
             print("All words added to hashtable")
         else:
             print("Error: did not add all words")
-        # todo print hashtable
-        try:
-            # todo proper enumeration xd
-            print("Enumerating...")
-            it = iter(hashtable)
-            while True:
-                print(next(it))
-        except StopIteration:
-            print("All nodes enumerated.")
-            pass
+
+        print(hashtable)
+
+        print("Enumerating...")
+        for item in hashtable:
+            print(item)
+        print("All nodes enumerated")
 
         shuffle(instance)
         print("Removing all nodes..")
@@ -62,16 +67,12 @@ def no_experiments_mode(instances, k):
             print("Hashtable empty.")
 
 
-def test_mode(k, repetitions):
-    enum = "enum"
-    add = "add"
-    delete = "del"
-    sizes = [5, 10, 50]  # , 100, 1000, 10000]
-    results = {}
+def test_mode(k, repetitions, sizes, outfile=None):
+    sizes.sort()
+    df = pd.DataFrame(columns=["add", "enum", "del"], index=sizes)
 
     for size in sizes:
         print("Experiments for size: ", size)
-        size_result = {}
 
         # preparations
         series = [size] * repetitions
@@ -101,14 +102,14 @@ def test_mode(k, repetitions):
             for item in table:
                 pass
         end_time = timeit.default_timer()
-        size_result[enum] = end_time - start_time
+        df["enum"][size] = (end_time - start_time) * 1000 / repetitions
 
         # measure adding time
         start_time = timeit.default_timer()
         for i in range(repetitions):
             tables[i].add(keys_to_add[i])
         end_time = timeit.default_timer()
-        size_result[add] = end_time - start_time
+        df["add"][size] = (end_time - start_time) * 1000 / repetitions
 
         # delete previously added keys (to keep the right problem size)
         for i in range(repetitions):
@@ -119,16 +120,19 @@ def test_mode(k, repetitions):
         for i in range(repetitions):
             tables[i].remove(keys_to_remove[i])
         end_time = timeit.default_timer()
-        size_result[delete] = end_time - start_time
+        df["del"][size] = (end_time - start_time) * 1000 / repetitions
 
-        results[size] = size_result
-        print(size_result)
-    # print(results)
-    present_results(results)
+        df.to_csv(outfile)
+    present_results(df, sizes)
 
 
-def text_mode(k, series):
-    instances = generate_instances(series)
+def text_mode(k):
+    instances = []
+    for line in sys.stdin:
+        if "" == line.rstrip():
+            break
+        else:
+            instances.append(line.split(" "))
     no_experiments_mode(instances, k)
 
 
@@ -142,7 +146,7 @@ def parse_args():
                                                  "readme.txt.")
 
     mode_group = parser.add_mutually_exclusive_group()
-    mode_group.add_argument("-gen", nargs="+", type=int, metavar="N",
+    mode_group.add_argument("-gen", action="store_true",
                             help="generate problems instances with sizes specified on the list")
     mode_group.add_argument("-test", action="store_true",
                             help="generate predefined problem instances, measure time of execution and present results")
@@ -151,8 +155,9 @@ def parse_args():
                         help="max size of hashtable, must be greater than 0, defaults to 50")
     parser.add_argument("-r", type=int, default=100,
                         help="number of repetitions for tests, relevant only if test mode is used, defaults to 100")
-    parser.add_argument("-save", type=str, default="out.csv",
+    parser.add_argument("-outfile", type=str, default="out.csv",
                         help="name of the results file, relevant only for test mode, defaults to out.csv")
+    parser.add_argument("-sizes", nargs="+", type=int, help="sizes of problem instances")
 
     return parser.parse_args()
 
@@ -164,15 +169,15 @@ def generate_instances(series) -> []:
 
 
 def find_file(current_dir, filename) -> []:
-    # todo change for while loop
     path = current_dir + "/" + filename
     if os.path.isfile(current_dir + "/" + filename):
         return path
-    elif os.path.isdir(path):
+    else:
         for directory in os.listdir(current_dir):
-            return_path = find_file(current_dir + "/" + directory, filename)
-            if return_path:
-                return return_path
+            if os.path.isdir(current_dir + "/" + directory):
+                return_path = find_file(current_dir + "/" + directory, filename)
+                if return_path:
+                    return return_path
         return None
 
 
@@ -190,9 +195,42 @@ def get_instances() -> []:
     return instances
 
 
-def present_results(results: {}):
-    # todo proper presentation
-    print(results)
+def present_results(df: pd.DataFrame, sizes):
+    # calculate median values
+    if len(sizes) % 2 == 0:
+        med_size = sizes[len(sizes) / 2]
+        med_add = df["add"][med_size]
+        med_del = df["del"][med_size]
+        med_enum = df["enum"][med_size]
+    else:
+        med_l = sizes[(len(sizes) - 1) // 2]
+        med_r = sizes[(len(sizes) + 1) // 2]
+        med_size = (med_r + med_l) / 2
+        med_add = (df["add"][med_l] + df["add"][med_r]) / 2
+        med_del = (df["add"][med_l] + df["add"][med_r]) / 2
+        med_enum = (df["add"][med_l] + df["add"][med_r]) / 2
+
+    med_add_theory = math.log(med_size)
+    med_del_theory = math.log(med_size)
+    med_enum_theory = med_size
+
+    add = pd.DataFrame(df["add"], columns=["add"])
+    add["q(n)"] = df["add"].divide([math.log(x) for x in sizes]) * med_add_theory / med_add
+    delete = pd.DataFrame(df["del"], columns=["del"])
+    delete["q(n)"] = df["del"].divide([math.log(x) for x in sizes]) * med_del_theory / med_del
+    enum = pd.DataFrame(df["enum"], columns=["enum"])
+    enum["q(n)"] = df["enum"].divide(sizes) * med_enum_theory / med_enum
+
+    print("Results for adding")
+    print(tabulate(add, headers=["n"] + add.columns.tolist(), tablefmt="pretty"))
+    print("Results for deleting")
+    print(tabulate(delete, headers=["n"] + delete.columns.tolist(), tablefmt="pretty"))
+    print("Results for enumerating")
+    print(tabulate(enum, headers=["n"] + enum.columns.tolist(), tablefmt="pretty"))
+    add.to_csv("add.csv")
+    delete.to_csv("delete.csv")
+    enum.to_csv("enum.csv")
 
 
+print(timeit.default_timer())
 main()
