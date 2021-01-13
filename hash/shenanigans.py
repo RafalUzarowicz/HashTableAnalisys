@@ -1,20 +1,24 @@
 # to sa moje glupoty nie patrz na to wgl pls
 import random
+from random import choice
+from string import ascii_uppercase
 
 from binary_tree import BalancedBinaryTree as BBT
 from hash_table import HashTable as HT
 
-k = 2
-n = 100
+k = 1
+n = 500000
 hashTable = HT(k)
 
 for x in range(n):
-	i = random.randint(0, 10)
-	hashTable.add(i.__str__())
+	i = random.randint(0, 0)
+	# print(''.join(choice(ascii_uppercase) for j in range(i)))
+	hashTable.add(''.join(choice(ascii_uppercase) for j in range(i)))
+	# hashTable.add(i.__str__())
 	# print(len(hashTable))
 	# print(x, " ", hashTable.calculate_hash(x.__str__()))
 
-xd = 50000
+xd = 0
 
 for i in range(xd):
 	hashTable.add("")
@@ -23,8 +27,8 @@ for i in range(xd):
 # 	for node in tree:
 # 		print(node)
 
-# for elem in hashTable:
-# 	print(elem)
+for elem in hashTable:
+	print(elem)
 
 print(hashTable)
 
