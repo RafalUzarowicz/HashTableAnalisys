@@ -3,7 +3,8 @@ from hashlib import md5
 from hash.binary_tree import BalancedBinaryTree as Tree
 
 """
-	Author: Rafał Uzarowicz - https://github.com/RafalUzarowicz
+	projekt: Analiza tablicy mieszającej (warianty W13 i W21)
+	autor: Rafał Uzarowicz - https://github.com/RafalUzarowicz
 """
 
 

@@ -1,5 +1,6 @@
 """
-    Author: Rafał Uzarowicz - https://github.com/RafalUzarowicz
+    projekt: Analiza tablicy mieszającej (warianty W13 i W21)
+    autor: Rafał Uzarowicz - https://github.com/RafalUzarowicz
 """
 
 

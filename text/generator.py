@@ -1,5 +1,6 @@
 """
-    author: Joanna Sokołowska - https://github.com/jsokolowska
+    projekt: Analiza tablicy mieszającej (warianty W13 i W21)
+    autor: Joanna Sokołowska - https://github.com/jsokolowska
  """
 
 import os
