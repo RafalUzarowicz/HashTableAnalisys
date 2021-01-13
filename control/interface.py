@@ -57,7 +57,7 @@ def parse_args():
                         help="number of repetitions for tests, relevant only if test mode is used, defaults to 100")
     parser.add_argument("--outfile", "-out", type=str,
                         help="name of the results file, relevant only for test mode, defaults to out.csv")
-    parser.add_argument("-sizes", nargs="+", type=int, help="sizes of problem instances")
+    parser.add_argument("--sizes", nargs="+", type=int, help="sizes of problem instances")
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("-in", "--infile", help="txt file to generate  probability distribution", action='store')
