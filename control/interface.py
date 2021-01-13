@@ -13,6 +13,8 @@ from tabulate import tabulate
 from matplotlib import pyplot as plt
 import math
 
+K = 50
+
 
 def standard_mode(k):
     instances = get_instances()
@@ -171,8 +173,8 @@ def present_results(df: pd.DataFrame):
         med_r = df.index[size // 2 - 1]
         med_size = (med_r + med_l) / 2
         med_add = (df["add"][med_l] + df["add"][med_r]) / 2
-        med_del = (df["add"][med_l] + df["add"][med_r]) / 2
-        med_enum = (df["add"][med_l] + df["add"][med_r]) / 2
+        med_del = (df["del"][med_l] + df["del"][med_r]) / 2
+        med_enum = (df["enum"][med_l] + df["enum"][med_r]) / 2
     else:
         med_size = df.index[(size - 1) // 2]
         med_add = df["add"][med_size]
@@ -214,8 +216,6 @@ def enumeration_theory_complexity(x):
 
 
 def print_progress_bar(iteration: int, total: int, length: int = 50) -> None:
-    if iteration == 0:
-        print("\n")
     filled = int(length * iteration // total)
     bar = '█' * filled + '-' * (length - filled)
     print(f"\rProgress: |{bar}| " + "{0:.2f}".format(100 * (iteration / float(total))) + "% Iteration: " + str(
@@ -256,6 +256,8 @@ def main():
     if args.k < 1:
         print("Hashtable size must be at least 1")
     else:
+        global K
+        K = args.k
         if args.gen:
             text_mode(args.k)
         elif args.test:
@@ -263,7 +265,7 @@ def main():
                 sizes = args.sizes
             else:
                 # sizes = [5, 10, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000]
-                sizes = [1000 * i for i in range(1, 22, 3)]
+                sizes = [1000 * i for i in range(10, 22, 1)]
             test_mode(args.k, args.r, sizes, args.outfile)
         else:
             standard_mode(args.k)
@@ -271,10 +273,21 @@ def main():
 
 # print(timeit.default_timer())
 main()
-
+#
 # dataf = pd.read_csv("out.csv", index_col=0)
 # print(dataf)
 # present_results(dataf)
 #
+# plt.title("enum")
 # plt.plot(dataf["enum"])
+# plt.show()
+#
+#
+# plt.title("add")
+# plt.plot(dataf["add"])
+# plt.show()
+#
+#
+# plt.title("del")
+# plt.plot(dataf["del"])
 # plt.show()
