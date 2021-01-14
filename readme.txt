@@ -47,23 +47,36 @@ Tryby uruchomienia są następujące:
 
 
 Dostępne flagi:
--h --help           Wyświetla wszystkie możliwe flagi wraz z opisami ich zastosowania.
--test               Uruchom program w trybie testowym.
--gen                Uruchom program w trybie standardowym z generacja danych.
--k K                Arbitralna stała ograniczająca długość tabeli mieszającej, domyślnie k=50.
--r R                Liczba powtórzeń eksperymentów, domyślnie r=100 (działa tylko dla trybu testowego).
+-h --help            Wyświetla wszystkie możliwe flagi wraz z opisami ich zastosowania.
+-test                Uruchom program w trybie testowym.
+-gen                 Uruchom program w trybie standardowym z generacja danych.
+-k K                 Arbitralna stała ograniczająca długość tabeli mieszającej, domyślnie k=50.
+-r R                 Liczba powtórzeń eksperymentów, domyślnie r=100 (działa tylko dla trybu testowego).
 --outfile OUTFILE    Nazwa pliku csv, w którym zostaną zapisane wyniki eksperymentów (tylko dla trybu
-                    testowego).
+                     testowego).
 --sizes [N....N]     Lista rozmiarów problemu, dla których ma zostać przeprowadzona analiza (tryb
-                    testowy) lub wielkość instancji problemu, dla trybu standardowego z generacja danych.
+                     testowy) lub wielkość instancji problemu, dla trybu standardowego z generacja danych.
 
 Flagi związane z generacją kluczy:
---infile INFILE          Plik wejściowy na podstawie którego zostanie wygenerowana tablica prawdopodobieństw.
+--infile INFILE      Plik wejściowy na podstawie którego zostanie wygenerowana tablica prawdopodobieństw.
 --prob-tbl PROB_TBL  Plik zawierający tablicę prawdopodobieństw
 --url URL            Adres url do pliku tekstowego zawierającego tekst, na podstawie którego zostanie
-                    wygenerowana tablica prawdopodobieństw.
+                     wygenerowana tablica prawdopodobieństw.
 
 Flagi gen i test są wzajemnie wykluczające, podobnie flagi inm prob-tbl i url.
+
+Można odrębnie uruchomić również sam moduł generatora poleceniem:
+python3 -m text.main [flagi]
+
+Dostępne flagi
+--infile INFILE      Plik wejściowy na podstawie którego zostanie wygenerowana tablica prawdopodobieństw.
+--prob-tbl PROB_TBL  Plik zawierający tablicę prawdopodobieństw
+--url URL            Adres url do pliku tekstowego zawierającego tekst, na podstawie którego zostanie
+                     wygenerowana tablica prawdopodobieństw.
+--outfile OUTFILE    Nazwa pliku tekstowego, w którym zostaną zapisane wygenerowane klucze.
+-c C                 Liczba kluczy, które chce się wygenerować.
+--sizes N [N...]     Lista rozmiarów problemu, dla których ma zostać przeprowadzona analiza (tryb
+                     testowy) lub wielkość instancji problemu, dla trybu standardowego z generacja danych.
 
 
 Konwencje we/wy
@@ -129,8 +142,8 @@ dostępu do nich.
 Moduł text
 Zawiera dwa pliki generator.py i main.py. Plik generator.py definiuje klasę generatora tekstu wraz z
 metodą generacji losowych napisów. Plik main.py odpowiada za obsługę argumentów linii poleceń, dzięki
-czemu generator może być wykorzystywany niezależnie od modułu control. Możliwe flagi generatora oraz
-jego działanie jest opisane szczegółowo w dokumentacji końcowej.
+czemu generator może być wykorzystywany niezależnie od modułu control. Jego działanie jest opisane
+szczegółowo w dokumentacji końcowej.
 
 Dodatkowe informacje
 ----------------------------------------------------------------------------------------------------
