@@ -27,7 +27,7 @@ class TextGenerator:
         else:
             self.url = "https://wolnelektury.pl/media/book/txt/pan-tadeusz.txt"
 
-        if os.path.isfile(prob_tbl):
+        if prob_tbl and os.path.isfile(prob_tbl):
             self.__load_prob_tbl(prob_tbl)
         else:
             self.prob_tbl = None
@@ -50,9 +50,8 @@ class TextGenerator:
         wget.download(self.url, self.text_file)
 
     def __create_prob_table(self) -> None:
-        with open(self.text_file) as file:
+        with open(self.text_file, "r", encoding="utf8") as file:
             text = file.read()
-
         table = pd.DataFrame(index=self.ACCEPTED_CHARS, columns=self.ACCEPTED_CHARS)
         table = table.fillna(0)
         i = 0
@@ -73,7 +72,8 @@ class TextGenerator:
         self.prob_tbl['sum'] = self.prob_tbl.sum(axis=1)
 
     def __save_prob_table(self) -> None:
-        with open(self.PROB_TABLE_FILE, "w") as file:
+        print(os.getcwd())
+        with open(self.PROB_TABLE_FILE, "w+") as file:
             file.write(self.prob_tbl.to_csv())
 
     def __generate_text(self) -> str:

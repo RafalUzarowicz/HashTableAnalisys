@@ -3,6 +3,7 @@
     autor: Joanna Sokolowska - https://github.com/jsokolowska
  """
 import argparse
+import os
 import sys
 import pandas as pd
 import math
@@ -28,7 +29,7 @@ def main():
             if args.sizes:
                 sizes = args.sizes
             else:
-                sizes = [1000 * i for i in range(1, 22, 3)]
+                sizes = [1000 * i for i in range(1, 20, 1)]
 
             generator = TextGenerator(prob_tbl=args.prob_tbl, infile=args.infile, url=args.url)
             test_mode(args.k, args.r, sizes, generator, args.outfile)
@@ -120,6 +121,7 @@ def test_mode(k, repetitions, sizes, generator, outfile=None) -> None:
     print("Repetitions: ", repetitions)
     sizes.sort()
     df = pd.DataFrame(columns=["add", "enum", "del"], index=sizes)
+    temp_file = "temp-" + str(k) + "k-" + str(repetitions) + "r.csv"
 
     for size in sizes:
         print("Doing experiments for size ", size)
@@ -170,6 +172,9 @@ def test_mode(k, repetitions, sizes, generator, outfile=None) -> None:
         df["enum"][size] = sum(enum) / len(enum)
         df["del"][size] = sum(delete) / len(delete)
 
+        df.to_csv(temp_file)
+
+    os.remove(temp_file)
     present_results(df, outfile)
 
 
@@ -244,4 +249,5 @@ def enumeration_time(size: int, k: int):
     return start_time - end_time
 
 
+#print(os.getcwd())
 main()

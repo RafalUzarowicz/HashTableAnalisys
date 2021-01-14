@@ -23,7 +23,7 @@ Ponadto analiza będzie przeprowadzana również dla enumeracji tablicy (W21).
 Aktywacja programu
 ----------------------------------------------------------------------------------------------------
 Program można uruchomić z linii poleceń używając komendy:
-python interface.py [flagi]
+python -m control.interface [flagi]
 
 Za pomocą flag można wybrać jeden z 3 trybów wykonania programu, a także podać dodatkowe parametry.
 Tryby uruchomienia są następujące:
@@ -52,10 +52,18 @@ Dostępne flagi:
 -gen                Uruchom program w trybie standardowym z generacja danych.
 -k K                Arbitralna stała ograniczająca długość tabeli mieszającej, domyślnie k=50.
 -r R                Liczba powtórzeń eksperymentów, domyślnie r=100 (działa tylko dla trybu testowego).
--outfile OUTFILE    Nazwa pliku csv, w którym zostaną zapisane wyniki eksperymentów (tylko dla trybu
+--outfile OUTFILE    Nazwa pliku csv, w którym zostaną zapisane wyniki eksperymentów (tylko dla trybu
                     testowego).
--sizes [N....N]     Lista rozmiarów problemu, dla których ma zostać przeprowadzona analiza (tryb
+--sizes [N....N]     Lista rozmiarów problemu, dla których ma zostać przeprowadzona analiza (tryb
                     testowy) lub wielkość instancji problemu, dla trybu standardowego z generacja danych.
+
+Flagi związane z generacją kluczy:
+--infile INFILE          Plik wejściowy na podstawie którego zostanie wygenerowana tablica prawdopodobieństw.
+--prob-tbl PROB_TBL  Plik zawierający tablicę prawdopodobieństw
+--url URL            Adres url do pliku tekstowego zawierającego tekst, na podstawie którego zostanie
+                    wygenerowana tablica prawdopodobieństw.
+
+Flagi gen i test są wzajemnie wykluczające, podobnie flagi inm prob-tbl i url.
 
 
 Konwencje we/wy
@@ -99,7 +107,7 @@ do której dodawane są wszystkie wygenerowane klucze z wyjątkiem jednego. Mier
 wszystkich elementów tablicy, następnie czas dodania uprzednio zachowanego klucza do tablicy, potem
 usuwany jest właśnie dodany klucz (w celu zachowania poprawnego rozmiaru problemu), a następnie mierzony jest
 czas usunięcia losowego klucza w drzewie. Dla każdego rozmiaru problemu ten proces (poczynając od generacji kluczy)
-powtarzany jest r razy (gdzie r jest parametrem linii poleceń, o domyślnej wartości 100), a wyniki są uśredniane
+powtarzany jest r razy (gdzie r jest parametrem linii poleceń, o domyślnej wartości 100), a wyniki są uśredniane,
 aby możliwie dobrze wyeliminować czynnik losowy.
 
 
@@ -119,9 +127,19 @@ i drzewa binarnego (drzewo AVL). Zdefiniowane są tam klasy realizujące struktu
 dostępu do nich.
 
 Moduł text
-Zawiera dwa pliki generator.py i main.py. Plik generator.py definuje klasę generatora tekstu wraz z
+Zawiera dwa pliki generator.py i main.py. Plik generator.py definiuje klasę generatora tekstu wraz z
 metodą generacji losowych napisów. Plik main.py odpowiada za obsługę argumentów linii poleceń, dzięki
-czemu generator może być wykorzystywany odrębnie od modułu control.
+czemu generator może być wykorzystywany niezależnie od modułu control. Możliwe flagi generatora oraz
+jego działanie jest opisane szczegółowo w dokumentacji końcowej.
 
 Dodatkowe informacje
 ----------------------------------------------------------------------------------------------------
+Ze względu na czasochłonność wykonywania testów program uruchomiony w trybie testowym okresowo zapisuje
+dotychczas zgromadzone dane do tymczasowego pliku csv. Dzięki temu, jeśli program będzie musiał zostać
+przerwany w trakcie obliczeń. Nazwa pliku ma format temp-[k]k-[r]r.csv, gdzie [k] i [r] są wartościami
+zmiennych k i repetitions ustawianych przez argumenty linii poleceń. Plik tymczasowy jest usuwany przed
+prezentacją wyników i jeśli została ustawiona flaga outfile wyniki końcowe wraz z analizą zgodności teorią
+są zapisywane do podanego pliku.
+
+Ponadto, aby urozmaicić czekanie na wykonanie się eksperymentów, program wyświetla paski postępu (oddzielny
+dla każdego zadanego rozmiaru problemu).
