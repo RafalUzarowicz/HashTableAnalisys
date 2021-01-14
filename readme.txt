@@ -1,7 +1,7 @@
 Zespół projektowy
 ----------------------------------------------------------------------------------------------------
 Joanna Sokołowska, nr indeksu 289463
-Rafał Uzarowicz, nr indeksu
+Rafał Uzarowicz, nr indeksu 300282
 
 
 Treść zadania
