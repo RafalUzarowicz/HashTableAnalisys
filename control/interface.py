@@ -175,6 +175,7 @@ def test_mode(k, repetitions, sizes, generator, outfile=None) -> None:
         df.to_csv(temp_file)
 
     os.remove(temp_file)
+    df = df.rename(columns={"add": "Add t(n)", "del": "Del t(n)", "enum": "Enum t(n)"})
     present_results(df, outfile)
 
 
@@ -196,24 +197,23 @@ def present_results(df: pd.DataFrame, outfile=None):
         med_l = df.index[size // 2]
         med_r = df.index[size // 2 - 1]
         med_size = (med_r + med_l) / 2
-        med_add = (df["add"][med_l] + df["add"][med_r]) / 2
-        med_del = (df["del"][med_l] + df["del"][med_r]) / 2
-        med_enum = (df["enum"][med_l] + df["enum"][med_r]) / 2
+        med_add = (df["Add t(n)"][med_l] + df["Add t(n)"][med_r]) / 2
+        med_del = (df["Del t(n)"][med_l] + df["Del t(n)"][med_r]) / 2
+        med_enum = (df["Enum t(n)"][med_l] + df["Enum t(n)"][med_r]) / 2
     else:
         med_size = df.index[(size - 1) // 2]
-        med_add = df["add"][med_size]
-        med_del = df["del"][med_size]
-        med_enum = df["enum"][med_size]
+        med_add = df["Add t(n)"][med_size]
+        med_del = df["Del t(n)"][med_size]
+        med_enum = df["Enum t(n)"][med_size]
 
     med_add_theory = add_theory_complexity(med_size)
     med_del_theory = remove_theory_complexity(med_size)
     med_enum_theory = enumeration_theory_complexity(med_size)
 
-    df["Add q(n)"] = df["add"].divide([add_theory_complexity(x) for x in df.index]) * med_add_theory / med_add
-    df["Del q(n)"] = df["del"].divide([remove_theory_complexity(x) for x in df.index]) * med_del_theory / med_del
-    df["Enum q(n)"] = df["enum"].divide(
+    df["Add q(n)"] = df["Add t(n)"].divide([add_theory_complexity(x) for x in df.index]) * med_add_theory / med_add
+    df["Del q(n)"] = df["Del t(n)"].divide([remove_theory_complexity(x) for x in df.index]) * med_del_theory / med_del
+    df["Enum q(n)"] = df["Enum t(n)"].divide(
         [enumeration_theory_complexity(x) for x in df.index]) * med_enum_theory / med_enum
-    df = df.rename(columns={"add": "Add t(n)", "del": "Del t(n)", "enum": "Enum t(n)"})
 
     print("Results for adding")
     print(tabulate(df[["Add t(n)", "Add q(n)"]], headers=["n", "Add t(n)", "Add q(n)"], tablefmt="pretty"))
@@ -248,6 +248,4 @@ def enumeration_time(size: int, k: int):
     end_time = timeit.default_timer()
     return start_time - end_time
 
-
-#print(os.getcwd())
 main()
