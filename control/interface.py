@@ -248,4 +248,5 @@ def enumeration_time(size: int, k: int):
     end_time = timeit.default_timer()
     return start_time - end_time
 
+
 main()
