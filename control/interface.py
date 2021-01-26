@@ -62,7 +62,7 @@ def parse_args():
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("-in", "--infile", help="txt file to generate  probability distribution", action='store')
-    group.add_argument("--prob-tbl", help="pkl file containing probability table", action='store')
+    group.add_argument("--prob-tbl", help="csv file containing probability table", action='store')
     group.add_argument("--url", help="url to sample txt file for generating probability distribution", action='store')
 
     return parser.parse_args()
